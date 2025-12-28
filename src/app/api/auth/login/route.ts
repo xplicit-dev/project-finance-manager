@@ -37,8 +37,8 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Compare password
-    const isValid = await bcrypt.compare(password, settings.password)
+    // Compare password (guaranteed to be set after checks above)
+    const isValid = await bcrypt.compare(password, settings.password!)
 
     if (!isValid) {
       return NextResponse.json(
