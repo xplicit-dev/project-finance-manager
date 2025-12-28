@@ -1,0 +1,7 @@
+-- CreateTable
+CREATE TABLE "Settings" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "currency" TEXT NOT NULL DEFAULT 'USD',
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
