@@ -11,6 +11,10 @@ interface DashboardStats {
   totalProfit: number
   activeProjects: number
   pendingInvoices: number
+  totalBudget: number
+  totalToCollect: number
+  totalPaid: number
+  totalPending: number
   recentTransactions: any[]
 }
 
@@ -22,6 +26,10 @@ export default function Dashboard() {
     totalProfit: 0,
     activeProjects: 0,
     pendingInvoices: 0,
+    totalBudget: 0,
+    totalToCollect: 0,
+    totalPaid: 0,
+    totalPending: 0,
     recentTransactions: [],
   })
   const [loading, setLoading] = useState(true)
@@ -55,6 +63,12 @@ export default function Dashboard() {
       const activeProjects = projects.filter((p: any) => p.status === 'active').length
       const pendingInvoices = invoices.filter((i: any) => i.status !== 'paid').length
 
+      // Calculate financial summary
+      const totalBudget = projects.reduce((sum: number, p: any) => sum + p.totalAmount, 0)
+      const totalToCollect = invoices.reduce((sum: number, i: any) => sum + i.amount, 0)
+      const totalPaid = payments.reduce((sum: number, p: any) => sum + p.amount, 0)
+      const totalPending = totalToCollect - totalPaid
+
       // Recent transactions (last 5)
       const allTransactions = [
         ...payments.map((p: any) => ({
@@ -79,6 +93,10 @@ export default function Dashboard() {
         totalProfit,
         activeProjects,
         pendingInvoices,
+        totalBudget,
+        totalToCollect,
+        totalPaid,
+        totalPending,
         recentTransactions,
       })
       setLoading(false)
@@ -184,6 +202,100 @@ export default function Dashboard() {
           </div>
           <h3 style={{ fontSize: '2rem', marginBottom: '0.25rem' }}>{formatCurrency(stats.totalProfit)}</h3>
           <p style={{ fontSize: '0.875rem', color: 'var(--dark-text-secondary)' }}>Net Profit</p>
+        </div>
+      </div>
+
+      {/* Financial Summary */}
+      <div style={{ marginBottom: '2rem' }}>
+        <h2 style={{ marginBottom: '1rem', fontSize: '1.25rem' }}>Financial Summary</h2>
+        <div className="grid grid-cols-4" style={{ gap: '1.5rem' }}>
+          {/* Total Budget */}
+          <div className="glass-card" style={{ padding: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+              <div
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '12px',
+                  background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2))',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <FolderKanban size={24} color="#3b82f6" />
+              </div>
+              <span className="badge badge-info">Budget</span>
+            </div>
+            <h3 style={{ fontSize: '2rem', marginBottom: '0.25rem' }}>{formatCurrency(stats.totalBudget)}</h3>
+            <p style={{ fontSize: '0.875rem', color: 'var(--dark-text-secondary)' }}>Total Budget</p>
+          </div>
+
+          {/* Total to Collect */}
+          <div className="glass-card" style={{ padding: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+              <div
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '12px',
+                  background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(126, 34, 206, 0.2))',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <FileText size={24} color="#a855f7" />
+              </div>
+              <span className="badge badge-info">Invoiced</span>
+            </div>
+            <h3 style={{ fontSize: '2rem', marginBottom: '0.25rem' }}>{formatCurrency(stats.totalToCollect)}</h3>
+            <p style={{ fontSize: '0.875rem', color: 'var(--dark-text-secondary)' }}>Total to Collect</p>
+          </div>
+
+          {/* Total Paid */}
+          <div className="glass-card" style={{ padding: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+              <div
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '12px',
+                  background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(22, 163, 74, 0.2))',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <TrendingUp size={24} color="#22c55e" />
+              </div>
+              <span className="badge badge-success">Received</span>
+            </div>
+            <h3 style={{ fontSize: '2rem', marginBottom: '0.25rem' }}>{formatCurrency(stats.totalPaid)}</h3>
+            <p style={{ fontSize: '0.875rem', color: 'var(--dark-text-secondary)' }}>Total Paid</p>
+          </div>
+
+          {/* Total Pending */}
+          <div className="glass-card" style={{ padding: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+              <div
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '12px',
+                  background: 'linear-gradient(135deg, rgba(251, 146, 60, 0.2), rgba(249, 115, 22, 0.2))',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Activity size={24} color="#fb923c" />
+              </div>
+              <span className="badge badge-warning">Pending</span>
+            </div>
+            <h3 style={{ fontSize: '2rem', marginBottom: '0.25rem' }}>{formatCurrency(stats.totalPending)}</h3>
+            <p style={{ fontSize: '0.875rem', color: 'var(--dark-text-secondary)' }}>Total Pending</p>
+          </div>
         </div>
       </div>
 
